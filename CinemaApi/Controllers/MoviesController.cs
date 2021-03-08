@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -46,9 +47,25 @@ namespace CinemaApi.Controllers
         }
 
         // POST api/<MoviesController>
+        //[HttpPost]
+        //public IActionResult Post([FromBody] Movie movie)
+        //{
+        //    _dbContext.Movies.Add(movie);
+        //    _dbContext.SaveChanges();
+        //    return StatusCode(StatusCodes.Status201Created);
+        //}
+
         [HttpPost]
-        public IActionResult Post([FromBody] Movie movie)
+        public IActionResult Post([FromForm] Movie movie)
         {
+            var guid = Guid.NewGuid();
+            var filePath = Path.Combine("wwwroot", guid+".jpg");
+            if (movie.Image != null)
+            {
+                var fileStream = new FileStream(filePath, FileMode.Create);
+                movie.Image.CopyTo(fileStream);
+            }
+            movie.ImageUrl = filePath.Remove(0,7);
             _dbContext.Movies.Add(movie);
             _dbContext.SaveChanges();
             return StatusCode(StatusCodes.Status201Created);
