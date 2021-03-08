@@ -1,4 +1,4 @@
-﻿using CinemaApi.Data;
+using CinemaApi.Data;
 using CinemaApi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -46,14 +46,12 @@ namespace CinemaApi.Controllers
             }            
         }
 
-        // POST api/<MoviesController>
-        //[HttpPost]
-        //public IActionResult Post([FromBody] Movie movie)
-        //{
-        //    _dbContext.Movies.Add(movie);
-        //    _dbContext.SaveChanges();
-        //    return StatusCode(StatusCodes.Status201Created);
-        //}
+        // GET api/<MoviesController>/Test/5
+        [HttpGet("[action]/{id}")]
+        public int Test(int id)
+        {
+            return id;
+        }
 
         [HttpPost]
         public IActionResult Post([FromForm] Movie movie)
