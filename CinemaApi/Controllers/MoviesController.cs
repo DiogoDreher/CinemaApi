@@ -25,8 +25,10 @@ namespace CinemaApi.Controllers
         // GET: api/<MoviesController>
         [Authorize]
         [HttpGet("[action]")]
-        public IActionResult AllMovies()
+        public IActionResult AllMovies(string sort, int? pageNumber, int? pageSize)
         {
+            var currentPageNumber = pageNumber ?? 1;
+            var currentPageSize = pageSize ?? 5;
             var movies = from movie in _dbContext.Movies
                             select new
                             {
@@ -38,7 +40,19 @@ namespace CinemaApi.Controllers
                                 Genre = movie.Genre,
                                 ImageUrl = movie.ImageUrl
                             };
-            return Ok(movies);
+
+            switch (sort)
+            {
+                case "desc":
+                    return Ok(movies.Skip((currentPageNumber - 1) * currentPageSize).Take(currentPageSize).OrderByDescending(m => m.Rating));
+
+                case "asc":
+                    return Ok(movies.Skip((currentPageNumber - 1) * currentPageSize).Take(currentPageSize).OrderBy(m => m.Rating));
+
+                default:
+                    return Ok(movies.Skip((currentPageNumber - 1) * currentPageSize).Take(currentPageSize));
+            }
+            
         }
 
         // GET api/<MoviesController>/5
@@ -55,6 +69,23 @@ namespace CinemaApi.Controllers
             {
                 return Ok(movie);
             }
+        }
+
+
+        [Authorize]
+        [HttpGet("[action]")]
+        // api/movies/findmovies?movieName=MissionImpossible
+        public IActionResult FindMovies(string movieName)
+        {
+            var movies = from movie in _dbContext.Movies
+                         where movie.Name.Contains(movieName)
+                         select new
+                         {
+                             Id = movie.Id,
+                             Name = movie.Name,
+                             ImageUrl = movie.ImageUrl
+                         };
+            return Ok(movies);
         }
 
         [Authorize(Roles = "Admin")]
