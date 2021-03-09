@@ -17,6 +17,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 
+
 namespace CinemaApi
 {
     public class Startup
@@ -34,9 +35,17 @@ namespace CinemaApi
 
             services.AddControllers();
             services.AddMvc().AddXmlSerializerFormatters();
-            services.AddDbContext<CinemaDbContext>(option => option.UseSqlServer(@"Data Source = (localdb)\MSSQLLocalDB; 
-                                                                                   Initial Catalog = CinemaDb; 
-                                                                                   Integrated Security = True"));
+
+            //Local DB Connection
+            //services.AddDbContext<CinemaDbContext>(option => option.UseSqlServer(@"Data Source = (localdb)\MSSQLLocalDB; 
+            //                                                                       Initial Catalog = CinemaDb; 
+            //                                                                       Integrated Security = True"));
+
+
+            //Azure Db Connection
+            services.AddDbContext<CinemaDbContext>(option => option.UseSqlServer(Configuration.GetConnectionString("CinemaDbConnection")));
+
+
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
